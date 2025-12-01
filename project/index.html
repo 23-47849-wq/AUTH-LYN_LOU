@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login + Clothing Collection</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    body {
+      font-family: 'Montserrat', Arial, sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background-attachment: fixed;
+    }
+    .glass {
+      background: rgba(255,255,255,0.18);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    .login-box {
+      padding: 40px;
+      border-radius: 20px;
+      width: 340px;
+      text-align: center;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      animation: fadeIn 1s;
+    }
+    .login-box h2 {
+      margin-bottom: 20px;
+      font-size: 28px;
+      font-weight: 700;
+      color: #764ba2;
+      letter-spacing: 1px;
+    }
+    .input-field {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      background: rgba(255,255,255,0.6);
+      font-size: 16px;
+      transition: box-shadow 0.3s;
+      box-shadow: 0 2px 8px rgba(118,75,162,0.07);
+    }
+    .input-field:focus {
+      box-shadow: 0 2px 16px rgba(118,75,162,0.15);
+    }
+    .input-group-text {
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: #764ba2;
+      font-size: 18px;
+      position: absolute;
+      right: 30px;
+      top: 10px;
+    }
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 25px;
+      margin: 15px 0;
+      font-size: 16px;
+      font-weight: bold;
+      color: #fff;
+      background: linear-gradient(90deg, #00c6ff 0%, #9c27b0 100%);
+      cursor: pointer;
+      transition: box-shadow 0.3s, transform 0.2s;
+      box-shadow: 0 2px 8px rgba(118,75,162,0.12);
+    }
+    .login-btn:hover {
+      box-shadow: 0 4px 16px rgba(118,75,162,0.18);
+      transform: translateY(-2px) scale(1.03);
+    }
+    .signup-link {
+      margin-top: 15px;
+      display: block;
+      color: #764ba2;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .signup-link:hover {
+      color: #00c6ff;
+      text-decoration: underline;
+    }
+    #clothing-section {
+      display: none;
+      padding: 40px;
+      max-width: 1200px;
+      margin: 40px auto;
+      border-radius: 20px;
+      animation: fadeIn 1s;
+    }
+    .dress-card {
+      background: rgba(255,255,255,0.7);
+      border-radius: 18px;
+      box-shadow: 0 4px 24px rgba(118,75,162,0.10);
+      margin-bottom: 30px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      overflow: hidden;
+    }
+    .dress-card:hover {
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: 0 8px 32px rgba(118,75,162,0.18);
+    }
+    .dress-card-img-top {
+      width:100%;
+      border-radius: 18px 18px 0 0;
+      height: 220px;
+      object-fit: cover;
+      filter: brightness(0.97);
+      transition: filter 0.3s;
+    }
+    .dress-card:hover .dress-card-img-top {
+      filter: brightness(1.05) saturate(1.1);
+    }
+    .dress-card-body {
+      padding:1rem;
+      background: rgba(255,255,255,0.85);
+      border-radius: 0 0 18px 18px;
+    }
+    .dress-card-title {
+      font-weight: 700;
+      color: #764ba2;
+      font-size: 20px;
+      margin-bottom: 6px;
+    }
+    .dress-card-para {
+      color: #555;
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
+    .dress-card-crossed {
+      text-decoration: line-through;
+      color: #aaa;
+      margin-left: 8px;
+    }
+    .dress-card-price {
+      font-size: 1rem;
+      font-weight: bold;
+      color: #9c27b0;
+    }
+    .dress-card-off {
+      color: #E06C9F;
+      margin-left: 8px;
+      font-weight: 600;
+    }
+    .card-button {
+      text-align: center;
+      text-transform: uppercase;
+      font-size: 15px;
+      padding: 9px;
+    }
+    .card-button-inner {
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: background 0.2s, color 0.2s;
+      cursor: pointer;
+    }
+    .bag-button {
+      background: linear-gradient(90deg, #E06C9F 0%, #9c27b0 100%);
+      color: white;
+      border: none;
+    }
+    .bag-button:hover {
+      background: linear-gradient(90deg, #9c27b0 0%, #E06C9F 100%);
+      color: #fff;
+    }
+    .wish-button {
+      border: 1px solid #E06C9F;
+      color: #E06C9F;
+      background: #fff;
+    }
+    .wish-button:hover {
+      background: #E06C9F;
+      color: #fff;
+    }
+    .logout-btn {
+      background: linear-gradient(90deg, #dc3545 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      border-radius: 25px;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: box-shadow 0.3s, transform 0.2s;
+      box-shadow: 0 2px 8px rgba(220,53,69,0.12);
+    }
+    .logout-btn:hover {
+      box-shadow: 0 4px 16px rgba(220,53,69,0.18);
+      transform: translateY(-2px) scale(1.03);
+      background: linear-gradient(90deg, #764ba2 0%, #dc3545 100%);
+    }
+    .user-info-bar {
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 15px;
+      padding: 10px 20px;
+      box-shadow: 0 2px 8px rgba(118,75,162,0.07);
+    }
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #764ba2;
+      box-shadow: 0 2px 8px rgba(118,75,162,0.12);
+    }
+    .wishlist-btn, .cart-btn {
+      margin-left: 10px;
+      background: #fff;
+      color: #764ba2;
+      border: 1px solid #764ba2;
+      border-radius: 20px;
+      padding: 5px 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      box-shadow: 0 2px 8px rgba(118,75,162,0.07);
+    }
+    .wishlist-btn:hover, .cart-btn:hover {
+      background: #764ba2;
+      color: #fff;
+    }
+    .modal-content {
+      border-radius: 15px;
+      background: rgba(255,255,255,0.95);
+      box-shadow: 0 8px 32px rgba(118,75,162,0.18);
+    }
+    @media (max-width: 768px) {
+      #clothing-section { padding: 10px; }
+      .dress-card-body { padding: 0.5rem; }
+      .login-box { width: 95vw; padding: 20px; }
+      .user-info-bar { flex-direction: column; gap: 8px; }
+    }
+.error-message {
+      color: #dc3545;
+      margin-top: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.98);}
+      to { opacity: 1; transform: scale(1);}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN FORM -->
+  <div class="login-box glass" id="login-box">
+    <h2>Login</h2>
+    <input type="text" placeholder="Username" id="username" class="input-field">
+    <div class="input-group mb-2" style="position:relative;">
+      <input type="password" placeholder="Password" id="password" class="input-field" style="margin:0;">
+      <span class="input-group-text" onclick="togglePassword()">
+        <i id="eye-icon" class="fa fa-eye"></i>
+      </span>
+    </div>
+    <a href="#" style="color:#9c27b0;font-size:14px;">Forgot password?</a>
+    <button class="login-btn" onclick="loginUser()">LOGIN</button>
+    <div id="error-message" class="error-message"></div>
+    <p style="margin:18px 0 8px 0;color:#764ba2;font-weight:500;">Or Sign In Using</p>
+    <div id="g_id_onload"
+         data-client_id="855865687175-fhhra5hajbihsgpgmaiq92toq3oh9gd7.apps.googleusercontent.com"
+         data-callback="handleGoogleResponse">
+    </div>
+    <div class="g_id_signin" data-type="standard"></div>
+    <a href="#" class="signup-link">SIGN UP</a>
+    <div id="user-info"></div>
+  </div>
+
+  <!-- CLOTHING SECTION -->
+  <div id="clothing-section" class="container glass">
+    <div class="user-info-bar">
+      <img id="user-avatar" class="user-avatar" src="" style="display:none;">
+      <span id="user-name"></span>
+      <button class="wishlist-btn" onclick="showWishlist()">Wishlist (<span id="wishlist-count">0</span>)</button>
+      <button class="cart-btn" onclick="showCart()">Cart (<span id="cart-count">0</span>)</button>
+      <button class="logout-btn" onclick="confirmLogout()">
+        <i class="fas fa-sign-out-alt"></i> Log Out
+      </button>
+    </div>
+    <h1 class="mb-4 text-center" style="font-weight:700;color:#764ba2;letter-spacing:1px;">Clothing Collections</h1>
+    <div class="row">
+      <!-- Harpa: Women's printed clothing -->
+      <div class="col-md-3 col-sm-6">
+        <div class="dress-card">
+          <div class="dress-card-head">
+            <img class="dress-card-img-top" src="https://images.unsplash.com/photo-1514996937319-344454492b37?auto=format&fit=crop&w=400&q=80" alt="Harpa Dress">
+          </div>
+          <div class="dress-card-body">
+            <h4 class="dress-card-title">Harpa</h4>
+            <p class="dress-card-para">Womans printed clothing</p>
+            <p>
+              <span class="dress-card-price">Rs.839</span>
+              <span class="dress-card-crossed">Rs.2099</span>
+              <span class="dress-card-off">(60% OFF)</span>
+            </p>
+            <div class="row">
+              <div class="col-6 card-button"><div class="card-button-inner bag-button" onclick="addToCart('Harpa')">Add to Bag</div></div>
+              <div class="col-6 card-button"><div class="card-button-inner wish-button" onclick="addToWishlist('Harpa')">Wishlist</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- H&N: Blue Printed A-Line Dress -->
+      <div class="col-md-3 col-sm-6">
+        <div class="dress-card">
+          <div class="dress-card-head">
+            <img class="dress-card-img-top" src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=400&q=80" alt="Blue Printed Dress">
+          </div>
+          <div class="dress-card-body">
+            <h4 class="dress-card-title">H&N</h4>
+            <p class="dress-card-para">Blue Printed A-Line Dress</p>
+            <p>
+              <span class="dress-card-price">Rs.999</span>
+              <span class="dress-card-crossed">Rs.2499</span>
+              <span class="dress-card-off">(60% OFF)</span>
+            </p>
+            <div class="row">
+              <div class="col-6 card-button"><div class="card-button-inner bag-button" onclick="addToCart('H&N')">Add to Bag</div></div>
+              <div class="col-6 card-button"><div class="card-button-inner wish-button" onclick="addToWishlist('H&N')">Wishlist</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- MANGO: Black Solid Bodycon Dress -->
+      <div class="col-md-3 col-sm-6">
+        <div class="dress-card">
+          <div class="dress-card-head">
+            <img class="dress-card-img-top" src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80" alt="Black Bodycon Dress">
+          </div>
+          <div class="dress-card-body">
+            <h4 class="dress-card-title">MANGO</h4>
+            <p class="dress-card-para">Black Solid Bodycon Dress</p>
+            <p>
+              <span class="dress-card-price">Rs.1599</span>
+              <span class="dress-card-crossed">Rs.3199</span>
+              <span class="dress-card-off">(50% OFF)</span>
+            </p>
+            <div class="row">
+              <div class="col-6 card-button"><div class="card-button-inner bag-button" onclick="addToCart('MANGO')">Add to Bag</div></div>
+              <div class="col-6 card-button"><div class="card-button-inner wish-button" onclick="addToWishlist('MANGO')">Wishlist</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ONLY: Red Floral Dress -->
+      <div class="col-md-3 col-sm-6">
+        <div class="dress-card">
+          <div class="dress-card-head">
+            <img class="dress-card-img-top" src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80" alt="Red Floral Dress">
+          </div>
+          <div class="dress-card-body">
+            <h4 class="dress-card-title">ONLY</h4>
+            <p class="dress-card-para">Red Floral Dress</p>
+            <p>
+              <span class="dress-card-price">Rs.1299</span>
+              <span class="dress-card-crossed">Rs.2599</span>
+              <span class="dress-card-off">(50% OFF)</span>
+            </p>
+            <div class="row">
+              <div class="col-6 card-button"><div class="card-button-inner bag-button" onclick="addToCart('ONLY')">Add to Bag</div></div>
+              <div class="col-6 card-button"><div class="card-button-inner wish-button" onclick="addToWishlist('ONLY')">Wishlist</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wishlist Modal -->
+  <div class="modal fade" id="wishlistModal" tabindex="-1" aria-labelledby="wishlistModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="wishlistModalLabel">Wishlist</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="wishlist-items"></div>
+      </div>
+    </div>
+  </div>
+  <!-- Cart Modal -->
+  <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="cartModalLabel">Cart</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="cart-items"></div>
+      </div>
+    </div>
+  </div>
+  <!-- Logout Confirmation Modal -->
+  <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to log out?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" onclick="logoutUser()" data-bs-dismiss="modal">Log Out</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let wishlist = [];
+    let cart = [];
+    let currentUser = { name: '', avatar: '' };
+
+    function loginUser() {
+      let user = document.getElementById("username").value.trim();
+      let pass = document.getElementById("password").value.trim();
+      document.getElementById("error-message").innerText = "";
+      if (!user || !pass) {
+        document.getElementById("error-message").innerText = "Enter username and password!";
+        return;
+      }
+      if (pass.length < 4) {
+        document.getElementById("error-message").innerText = "Password must be at least 4 characters.";
+        return;
+      }
+      currentUser.name = user;
+      currentUser.avatar = "";
+      showClothingSection();
+    }
+
+    function handleGoogleResponse(response) {
+      const jwt = response.credential;
+      const payload = JSON.parse(atob(jwt.split('.')[1]));
+      currentUser.name = payload.name;
+      currentUser.avatar = payload.picture || "";
+      showClothingSection();
+    }
+
+    function showClothingSection() {
+      document.getElementById("login-box").style.display = "none";
+      document.getElementById("clothing-section").style.display = "block";
+      document.getElementById("user-name").innerHTML = `<b>Welcome, ${currentUser.name}</b>`;
+      if (currentUser.avatar) {
+        document.getElementById("user-avatar").src = currentUser.avatar;
+        document.getElementById("user-avatar").style.display = "inline-block";
+      } else {
+        document.getElementById("user-avatar").style.display = "none";
+      }
+      updateWishlistCount();
+      updateCartCount();
+    }
+
+    function logoutUser() {
+      document.getElementById("clothing-section").style.display = "none";
+      document.getElementById("login-box").style.display = "block";
+      document.getElementById("username").value = "";
+      document.getElementById("password").value = "";
+      document.getElementById("user-info").innerHTML = "";
+      document.getElementById("user-name").innerHTML = "";
+      document.getElementById("user-avatar").src = "";
+      document.getElementById("user-avatar").style.display = "none";
+      wishlist = [];
+      cart = [];
+      updateWishlistCount();
+      updateCartCount();
+      if (window.google && window.google.accounts && window.google.accounts.id) {
+        window.google.accounts.id.disableAutoSelect();
+      }
+    }
+
+    function confirmLogout() {
+      let modal = new bootstrap.Modal(document.getElementById('logoutModal'));
+      modal.show();
+    }
+
+    function togglePassword() {
+      const pwd = document.getElementById("password");
+      const eye = document.getElementById("eye-icon");
+      if (pwd.type === "password") {
+        pwd.type = "text";
+        eye.classList.remove("fa-eye");
+        eye.classList.add("fa-eye-slash");
+      } else {
+        pwd.type = "password";
+        eye.classList.remove("fa-eye-slash");
+        eye.classList.add("fa-eye");
+      }
+    }
+
+    function addToWishlist(item) {
+      if (!wishlist.includes(item)) {
+        wishlist.push(item);
+        updateWishlistCount();
+      }
+    }
+
+    function addToCart(item) {
+      cart.push(item);
+      updateCartCount();
+    }
+
+    function updateWishlistCount() {
+      document.getElementById("wishlist-count").innerText = wishlist.length;
+    }
+
+    function updateCartCount() {
+      document.getElementById("cart-count").innerText = cart.length;
+    }
+
+    function showWishlist() {
+      let modal = new bootstrap.Modal(document.getElementById('wishlistModal'));
+      let html = wishlist.length
+        ? `<ul>${wishlist.map(i => `<li>${i}</li>`).join('')}</ul>`
+        : "<p>Your wishlist is empty.</p>";
+      document.getElementById("wishlist-items").innerHTML = html;
+      modal.show();
+    }
+
+    function showCart() {
+      let modal = new bootstrap.Modal(document.getElementById('cartModal'));
+      let html = cart.length
+        ? `<ul>${cart.map(i => `<li>${i}</li>`).join('')}</ul>`
+        : "<p>Your cart is empty.</p>";
+      document.getElementById("cart-items").innerHTML = html;
+      modal.show();
+    }
+  </script>
+</body>
+</html>
